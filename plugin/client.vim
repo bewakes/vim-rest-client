@@ -13,5 +13,7 @@ EOF
 function! Process()
     let l:line_num=line(".")
     let l:all_text=join(getline(1,'$'), "\n")
-    python3 rest.process_and_call(vim.eval('l:line_num'), vim.eval('l:all_text'))
+    let l:buffer_data=python3 rest.process_and_call(vim.eval('l:line_num'), vim.eval('l:all_text'))
+    echo l:buffer_data
+    echo "woo ho""
 endfunction

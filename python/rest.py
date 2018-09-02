@@ -1,4 +1,5 @@
 import requests
+import vim
 
 
 def get_lines_for(tag, lines):
@@ -57,7 +58,10 @@ def process_and_call(line, text):
     )
 
     # get body lines
-    bodylines, _ = get_lines_for('body', relevant_lines[methodstart+bodystart:])
+    bodylines, _ = get_lines_for(
+        'body',
+        relevant_lines[methodstart+bodystart:]
+    )
     # TODO: check for optional body
 
     headers = get_headers(headerlines)
