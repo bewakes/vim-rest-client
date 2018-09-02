@@ -9,3 +9,12 @@ python_root_dir = normpath(join(plugin_root_dir, '..', 'python'))
 sys.path.insert(0, python_root_dir)
 import rest 
 EOF
+
+function! Process()
+    let l:selected=shellescape(join(getline(a:firstline, a:lastline), "\n"))
+    python3 rest.print_input(selected)
+endfunction
+
+function! PrintDate()
+    python3 rest.print_date()
+endfunction
