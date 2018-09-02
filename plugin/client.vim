@@ -12,7 +12,7 @@ EOF
 
 function! Process()
     let l:selected=shellescape(join(getline(a:firstline, a:lastline), "\n"))
-    python3 rest.print_input(selected)
+    python3 rest.print_input(vim.eval('l:selected'))
 endfunction
 
 function! PrintDate()
