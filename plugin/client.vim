@@ -13,9 +13,5 @@ EOF
 function! Process()
     let l:line_num=line(".")
     let l:all_text=join(getline(1,'$'), "\n")
-    python3 rest.process_input(vim.eval('l:line_num'), vim.eval('l:all_text'))
-endfunction
-
-function! PrintDate()
-    python3 rest.print_date()
+    python3 rest.process_and_call(vim.eval('l:line_num'), vim.eval('l:all_text'))
 endfunction
