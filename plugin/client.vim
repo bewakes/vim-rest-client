@@ -21,13 +21,13 @@ function! RunClient()
     python3 rest.process_and_call(vim.eval('l:line_num'), vim.eval('l:all_text'))
 
     " If buffer exist, remove it and then only create new
-    echo "bufexists"
-    echo bufexists("vrc_resp")
-    if bufexists("vrc_resp") > 0
-        bufdo if @% == "vrc_resp" | set ma | endif
+    bufdo if @% == "vrc_resp" | set ma | endif
+    try
         bd! vrc_resp
-    endif
+    catch
+    endtry
 
+    " TODO: bug when buffer is deleted and again client run
     vne vrc_resp | execute "0read " . vrc_result_path
     set wrap
     normal !gg
