@@ -32,20 +32,12 @@ function! RunClient()
     " Get all text
     let l:all_text=join(getline(1,'$'), "\n")
 
-    " Call our mighty python function, this will set a dict to
-    " l:vim_rest_client_data
+    " Call our mighty python function which will write result to file and 
+    " store path in variable vrc_result_path
     python3 rest.process_and_call(vim.eval('l:line_num'), vim.eval('l:all_text'))
 
-    " Output variable whose content is dumped to buffer
-    let l:output = ""
-
-    " Process the output dict, first check for error
-    if l:vim_rest_client_data['error']
-        let l:output = l:output."ERROR\n=====\n\n".vim_rest_client_data['message']
-    else
-        let l:output = ProcessClientOutput(vim_rest_client_data)
-    endif
-    vne | put = l:output
+    echo vrc_result_path
+    vne | execute "0read " . vrc_result_path
     normal !gg
     set noma
 endfunction

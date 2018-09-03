@@ -2,6 +2,17 @@ import requests
 import json
 import vim
 
+STATUSES = {
+    200: 'OK',
+    201: 'CREATED',
+    400: 'BAD REQUEST',
+    404: 'NOT FOUND',
+    500: 'SERVER ERROR',
+    403: 'FORBIDDEN',
+    401: 'UNAUTHENTICATED',
+    502: 'GATWAY TIMEOUT',
+}
+
 
 def get_lines_for(tag, lines):
     tag = tag.lower()
@@ -31,8 +42,30 @@ def get_headers(headerlines):
     return headers
 
 
-def to_vim(name, val):
-    vim.command(r'let {} = {}'.format(name, val))
+def to_vim_str(name, val):
+    vim.command(r'let {} = "{}"'.format(name, val))
+
+
+def save_result(result):
+    filepath = '/tmp/vim_rest_client_result'
+    error = result['error']
+    with open(filepath, 'w') as f:
+        if error:
+            f.write("ERROR\n=====\n\n")
+            f.write(result['message'])
+            return filepath
+        f.write("RESPONSE\n========\n\n")
+        f.write("{} {}\nStatus {} {}\n\n".format(
+            result['method'], result['url'], result['status_code'],
+            STATUSES.get(result['status_code'], '')
+        ))
+        f.write("HEADERS\n=======\n")
+        f.write('\n'.join(
+            ["{}: {}".format(k, v) for k, v in result['headers'].items()]
+        ))
+        f.write("\n\nBODY\n====\n")
+        f.write(result['body'])
+        return filepath
 
 
 def process_and_call(line, text):
@@ -106,4 +139,5 @@ def process_and_call(line, text):
             'headers': resp.headers,
             'body': result
             }
-    to_vim('vim_rest_client_data', output)
+    path = save_result(output)
+    to_vim_str('vrc_result_path', path)
