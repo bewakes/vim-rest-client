@@ -104,7 +104,6 @@ def process_and_call(line, text):
             'method': method.upper(),
             'status_code': resp.status_code,
             'headers': resp.headers,
-            'body': result.split('\n'),
+            'body': ['$("#searchbox").on(input, function(e) { '], #result.split('\n'),
         }
-    print(output)
     to_vim('vim_rest_client_data', output)

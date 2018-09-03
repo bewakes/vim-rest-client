@@ -11,10 +11,18 @@ import rest
 EOF
 
 function! ProcessClientOutput(output)
-    let l:result = "RESPONSE\n========\n\n"
+    let l:result = "========\nRESPONSE\n========\n\n"
     let l:result = l:result.a:output['method']." ".a:output['url']."  ".a:output['status_code']."\n\n"
-    let l:result = l:result."HEADER\n"."\n"
-    let l:result = l:result."BODY\n\n".join(a:output['body'], "\n")
+
+    " Calculate headers
+    let l:headers = []
+    for [k, v] in items(a:output['headers'])
+        call add(l:headers, k.": ".v)
+    endfor
+    " Append headers
+    let l:result = l:result."HEADER\n======\n".join(l:headers, "\n")."\n\n"
+    " Append body
+    let l:result = l:result."BODY\n====\n".join(a:output['body'], "\n")
     return l:result
 endfunction
 
