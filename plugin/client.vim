@@ -15,5 +15,4 @@ function! Process()
     let l:all_text=join(getline(1,'$'), "\n")
     python3 rest.process_and_call(vim.eval('l:line_num'), vim.eval('l:all_text'))
     echo vim_rest_client_data
-    echo "woo ho""
 endfunction

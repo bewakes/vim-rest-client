@@ -31,7 +31,7 @@ def get_headers(headerlines):
 
 
 def to_vim(name, val):
-    vim.eval('let {} = {}'.format(name, val))
+    vim.command('let {} = "{}"'.format(name, val))
 
 
 def process_and_call(line, text):
@@ -79,4 +79,4 @@ def process_and_call(line, text):
     # NOTE: now, this is for get only
     resp = request_method(url, headers=headers)
     # TODO: send this back to vim
-    to_vim('vim_rest_client_data', resp.text)
+    to_vim('l:vim_rest_client_data', resp.text.replace('"', r'\"'))
