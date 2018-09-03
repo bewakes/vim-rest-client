@@ -10,22 +10,6 @@ sys.path.insert(0, python_root_dir)
 import rest 
 EOF
 
-function! ProcessClientOutput(output)
-    let l:result = "========\nRESPONSE\n========\n\n"
-    let l:result = l:result.a:output['method']." ".a:output['url']."  ".a:output['status_code']."\n\n"
-
-    " Calculate headers
-    let l:headers = []
-    for [k, v] in items(a:output['headers'])
-        call add(l:headers, k.": ".v)
-    endfor
-    " Append headers
-    let l:result = l:result."HEADER\n======\n".join(l:headers, "\n")."\n\n"
-    " Append body
-    let l:result = l:result."BODY\n====\n".a:output['body']
-    return l:result
-endfunction
-
 function! RunClient()
     " Get current line number
     let l:line_num=line(".")
@@ -36,8 +20,13 @@ function! RunClient()
     " store path in variable vrc_result_path
     python3 rest.process_and_call(vim.eval('l:line_num'), vim.eval('l:all_text'))
 
-    echo vrc_result_path
-    vne | execute "0read " . vrc_result_path
+    " If buffer exist, remove it and then only create new
+    if bufexists("vrc_resp") > 0
+        bd! vrc_resp
+    endif
+
+    vne vrc_resp | execute "0read " . vrc_result_path
+    set wrap
     normal !gg
     set noma
 endfunction
