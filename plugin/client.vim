@@ -17,5 +17,5 @@ function! Process()
     let l:output = "RESPONSE\n"."========\n\n".vim_rest_client_data
     vne | put = l:output
     normal !gg
-    view
+    set noma
 endfunction
