@@ -14,7 +14,7 @@ function! ProcessClientOutput(output)
     let l:result = "RESPONSE\n========\n\n"
     let l:result = l:result.a:output['method']." ".a:output['url']."  ".a:output['status_code']."\n\n"
     let l:result = l:result."HEADER\n"."\n"
-    let l:result = l:result."BODY\n\n".a:output['body']
+    let l:result = l:result."BODY\n\n".join(a:output['body'], "\n")
     return l:result
 endfunction
 
