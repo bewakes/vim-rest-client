@@ -30,6 +30,10 @@ def get_headers(headerlines):
     return headers
 
 
+def to_vim(name, val):
+    vim.eval("let {} = {}".format(name, val))
+
+
 def process_and_call(line, text):
     linenum = int(line)
     lines = text.split('\n')
@@ -75,4 +79,4 @@ def process_and_call(line, text):
     # NOTE: now, this is for get only
     resp = request_method(url, headers=headers)
     # TODO: send this back to vim
-    print(resp.text)
+    to_vim('vim_rest_client_data', resp.text)
