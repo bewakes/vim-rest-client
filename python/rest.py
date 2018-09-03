@@ -37,19 +37,23 @@ def to_vim(name, val):
 
 def process_and_call(line, text):
     linenum = int(line)
-    lines = text.split('\n')
+    lines = [x for x in text.split('\n') if x.strip()]
 
     firstline = 0
     endline = 0
-    for i, line in enumerate(lines):
-        if line.startswith('###'):
-            if i <= linenum - 1:
-                firstline = i
-            else:
-                endline = i
-                break
 
     try:
+        for i, line in enumerate(lines):
+            if line.strip().replace(' ', '').startswith('<request>'):
+                if i <= linenum - 1:
+                    firstline = i
+            elif line.strip().replace(' ', '').startswith('</request>'):
+                if i > linenum - 1:
+                    endline = i
+                    break
+        if firstline >= endline:
+            raise Exception('Request must be enclosed in <request> </request> tag')  # noqa
+
         relevant_lines = lines[firstline+1:endline]  # need not include borders
         # Strip off empty lines
         relevant_lines = [x for x in relevant_lines if x.strip() != '']
@@ -102,4 +106,5 @@ def process_and_call(line, text):
             'headers': resp.headers,
             'body': result,
         }
+    print(output)
     to_vim('vim_rest_client_data', output)
