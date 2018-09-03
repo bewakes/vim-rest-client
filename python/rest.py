@@ -104,6 +104,6 @@ def process_and_call(line, text):
             'method': method.upper(),
             'status_code': resp.status_code,
             'headers': resp.headers,
-            'body': result.replace('\'', r'"').split('\n'),
-        }
+            'body': result
+            }
     to_vim('vim_rest_client_data', output)

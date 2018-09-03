@@ -22,7 +22,7 @@ function! ProcessClientOutput(output)
     " Append headers
     let l:result = l:result."HEADER\n======\n".join(l:headers, "\n")."\n\n"
     " Append body
-    let l:result = l:result."BODY\n====\n".join(a:output['body'], "\n")
+    let l:result = l:result."BODY\n====\n".a:output['body']
     return l:result
 endfunction
 
