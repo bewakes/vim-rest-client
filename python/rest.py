@@ -48,7 +48,7 @@ def process_and_call(line, text):
                 endline = i
                 break
 
-    relevant_lines = lines[firstline+1:endline-1]  # need not include borders
+    relevant_lines = lines[firstline+1:endline]  # need not include borders
     # Strip off empty lines
     relevant_lines = [x for x in relevant_lines if x.strip() != '']
 
