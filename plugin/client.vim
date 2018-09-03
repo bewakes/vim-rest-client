@@ -27,11 +27,11 @@ function! RunClient()
     let l:output = ""
 
     " Process the output dict, first check for error
-    if l:vim_rest_client_data['error']:
-        let l:output += "ERROR\n".l:vim_rest_client_data['message']
-        return
+    if l:vim_rest_client_data['error']
+        let l:output = l:output."ERROR\n".vim_rest_client_data['message']
+    else
+        let l:output = "RESPONSE\n"."========\n\n".vim_rest_client_data
     endif
-    let l:output = "RESPONSE\n"."========\n\n".vim_rest_client_data
     vne | put = l:output
     normal !gg
     set noma

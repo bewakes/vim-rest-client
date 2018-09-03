@@ -32,7 +32,7 @@ def get_headers(headerlines):
 
 
 def to_vim(name, val):
-    vim.command('let {} = "{}"'.format(name, val))
+    vim.command('let {} = {}'.format(name, val))
 
 
 def process_and_call(line, text):
@@ -76,7 +76,7 @@ def process_and_call(line, text):
         # body = get_body(headers, bodylines)
     except Exception as e:
         output = {
-            'error': True,
+            'error': 1,
             'message': e.args[0]
         }
     else:
@@ -95,10 +95,10 @@ def process_and_call(line, text):
             result = json.dumps(resp.json(), indent=4)
 
         output = {
-            'error': False,
+            'error': 0,
             'method': method.upper(),
             'status_code': resp.status_code,
             'headers': resp.headers,
             'body': result.replace('"', r'\"')
         }
-        to_vim('l:vim_rest_client_data', output)
+    to_vim('vim_rest_client_data', output)
