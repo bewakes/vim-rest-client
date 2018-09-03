@@ -10,10 +10,27 @@ sys.path.insert(0, python_root_dir)
 import rest 
 EOF
 
-function! Process()
+function! ProcessClientOutput(output)
+endfunction
+
+function! RunClient()
+    " Get current line number
     let l:line_num=line(".")
+    " Get all text
     let l:all_text=join(getline(1,'$'), "\n")
+
+    " Call our mighty python function, this will set a dict to
+    " l:vim_rest_client_data
     python3 rest.process_and_call(vim.eval('l:line_num'), vim.eval('l:all_text'))
+
+    " Output variable whose content is dumped to buffer
+    let l:output = ""
+
+    " Process the output dict, first check for error
+    if l:vim_rest_client_data['error']:
+        let l:output += "ERROR\n".l:vim_rest_client_data['message']
+        return
+    endif
     let l:output = "RESPONSE\n"."========\n\n".vim_rest_client_data
     vne | put = l:output
     normal !gg
