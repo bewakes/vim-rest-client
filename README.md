@@ -7,23 +7,23 @@ Kind of an alternative to Postman and similar GUI applications.
 ## Usage
 Currently, the following is a sample request
 ```
-#############
-<header>
-    Authorization: Token bibek
-</header>
+<request>
+    <header>
+        Authorization: Token bibek
+    </header>
 
-<method>
-    GET https://bewakes.com/til/api/?random=1
-</method>
+    <method>
+        GET https://bewakes.com/til/api/?random=1
+    </method>
 
-<body>
-    a=1
-    b=2
-    c=3
-</body>
-#############
+    <body>
+        a=1
+        b=2
+        c=3
+    </body>
+</request>
 ```
-Note that, the format is similar to html. And request is inside two lines containing `###`.  
+Note that, the format is similar to html. The root tag is `<request>`.  
 
 To get response, run command in normal mode `:call RestClient()`, and the result is in a vertical splitted buffer. 
 
