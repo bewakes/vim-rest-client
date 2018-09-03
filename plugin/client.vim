@@ -11,6 +11,11 @@ import rest
 EOF
 
 function! ProcessClientOutput(output)
+    let l:result = "RESPONSE\n========\n\n"
+    let l:result = l:result.a:output['method']." ".a:output['url']."  ".a:output['status_code']."\n\n"
+    let l:result = l:result."HEADER\n"."\n"
+    let l:result = l:result."BODY\n\n".a:output['body']
+    return l:result
 endfunction
 
 function! RunClient()
@@ -28,9 +33,9 @@ function! RunClient()
 
     " Process the output dict, first check for error
     if l:vim_rest_client_data['error']
-        let l:output = l:output."ERROR\n".vim_rest_client_data['message']
+        let l:output = l:output."ERROR\n=====\n\n".vim_rest_client_data['message']
     else
-        let l:output = "RESPONSE\n"."========\n\n".vim_rest_client_data
+        let l:output = ProcessClientOutput(vim_rest_client_data)
     endif
     vne | put = l:output
     normal !gg
