@@ -14,5 +14,8 @@ function! Process()
     let l:line_num=line(".")
     let l:all_text=join(getline(1,'$'), "\n")
     python3 rest.process_and_call(vim.eval('l:line_num'), vim.eval('l:all_text'))
-    vne | put =vim_rest_client_data
+    let l:output = "RESPONSE\n"."========\n\n".vim_rest_client_data
+    vne | put = l:output
+    normal !gg
+    view
 endfunction
