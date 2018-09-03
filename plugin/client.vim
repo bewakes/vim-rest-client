@@ -22,6 +22,7 @@ function! RunClient()
 
     " If buffer exist, remove it and then only create new
     if bufexists("vrc_resp") > 0
+        bufdo if @% == "vrc_resp" | set ma | endif
         bd! vrc_resp
     endif
 
