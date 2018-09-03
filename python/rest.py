@@ -79,4 +79,4 @@ def process_and_call(line, text):
     # NOTE: now, this is for get only
     resp = request_method(url, headers=headers)
     # TODO: send this back to vim
-    to_vim('vim_rest_client_data', resp.text)
+    to_vim('g:vim_rest_client_data', resp.text)
