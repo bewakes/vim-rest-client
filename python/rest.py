@@ -110,19 +110,22 @@ def process_and_call(line, text):
         headers = get_headers(headerlines)
         method, url = methodlines[0].strip().split()
 
-        # body = get_body(headers, bodylines)
+        # now we are ready for sending request
+        request_method = getattr(requests, method.lower())
+
+        # NOTE: now, this is for get only
+        resp = request_method(url, headers=headers)
+    except requests.exceptions.SSLError as e:
+        output = {
+            'error': 1,
+            'message': 'SSL error occured. Maybe the certificate of the website expired or you don\'t have updated certificates'  # noqa
+        }
     except Exception as e:
         output = {
             'error': 1,
             'message': e.args[0]
         }
     else:
-        # now we are ready for sending request
-        request_method = getattr(requests, method.lower())
-
-        # NOTE: now, this is for get only
-        resp = request_method(url, headers=headers)
-
         respheaders = resp.headers
         contenttype = respheaders.get('Content-Type', 'text/html')
 

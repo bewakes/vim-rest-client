@@ -21,6 +21,8 @@ function! RunClient()
     python3 rest.process_and_call(vim.eval('l:line_num'), vim.eval('l:all_text'))
 
     " If buffer exist, remove it and then only create new
+    echo "bufexists"
+    echo bufexists("vrc_resp")
     if bufexists("vrc_resp") > 0
         bufdo if @% == "vrc_resp" | set ma | endif
         bd! vrc_resp
