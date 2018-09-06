@@ -20,12 +20,8 @@ function! RunClient()
     " store path in variable vrc_result_path
     python3 rest.process_and_call(vim.eval('l:line_num'), vim.eval('l:all_text'))
 
-    " If buffer exist, remove it and then only create new
+    " If buffer exists, remove it and then only create new
     bufdo if @% == "vrc_resp" | set ma | endif
-    try
-        bd! vrc_resp
-    catch
-    endtry
 
     " TODO: bug when buffer is deleted and again client run
     vne vrc_resp | execute "0read " . vrc_result_path
@@ -43,3 +39,7 @@ function! VrcTemplate()
         execute 'normal G'
     endfor
 endfunction
+
+command! -nargs=0 VrcTemplate call VrcTemplate()
+
+command! -nargs=0 RunVrc call RunClient()
