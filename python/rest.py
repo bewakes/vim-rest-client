@@ -65,12 +65,13 @@ def save_result(result):
         ))
         f.write("\n\nBODY\n====\n")
         f.write(result['body'])
+        f.close()
         return filepath
 
 
 def process_and_call(line, text):
     linenum = int(line)
-    lines = [x for x in text.split('\n') if x.strip()]
+    lines = [x for x in text.split('\n')]
 
     firstline = 0
     endline = 0
@@ -130,12 +131,15 @@ def process_and_call(line, text):
             'error': 1,
             'message': 'SSL error occured. Maybe the certificate of the website expired or you don\'t have updated certificates'  # noqa
         }
-    except Exception as e:
-        import traceback
-        print(traceback.format_exc())
+    except requests.exceptions.ConnectionError as e:
         output = {
             'error': 1,
-            'message': e.args[0]
+            'message': 'Connection Error occured.\nPerhaps the site does not exist or you do not have internet connection.'  # noqa
+        }
+    except Exception as e:
+        output = {
+            'error': 1,
+            'message': str(type(e))
         }
     else:
         respheaders = resp.headers

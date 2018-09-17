@@ -11,6 +11,7 @@ import rest
 EOF
 
 function! RunClient()
+    " clear vrc_result_path file
     " Get current line number
     let l:line_num=line(".")
     " Get all text
@@ -22,6 +23,7 @@ function! RunClient()
 
     " If buffer exists, remove it and then only create new
     bufdo if @% == "vrc_resp" | set ma | endif
+    bufdo if @% == "vrc_resp" | bd! | endif
 
     " TODO: bug when buffer is deleted and again client run
     vne vrc_resp | execute "0read " . vrc_result_path
