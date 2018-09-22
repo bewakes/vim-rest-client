@@ -4,6 +4,9 @@ A HTTP client for vim.
 
 Kind of an alternative to Postman and similar GUI applications.
 
+## Installation
+It's very easy. Install [Plug](https://github.com/junegunn/vim-plug). And in your `vimrc` file, within `Plug` block, add `"bewakes/vim-rest-client"`. Reload vim and then run `:PlugInstall`.
+
 ## Usage
 
 Sample request
