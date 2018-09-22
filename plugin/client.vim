@@ -46,6 +46,10 @@ function! VrcTemplate()
     endfor
 endfunction
 
+
+" Setting file type
+au BufNewFile,BufRead *.vrc set filetype=vrc
+
 command! -nargs=0 VrcTemplate call VrcTemplate()
 
 command! -nargs=0 RunVrc call RunClient()
