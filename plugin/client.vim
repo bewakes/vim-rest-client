@@ -19,14 +19,18 @@ function! RunClient()
 
     " Call our mighty python function which will write result to file and 
     " store path in variable vrc_result_path
-    python3 rest.process_and_call(vim.eval('l:line_num'), vim.eval('l:all_text'))
+    let l:output_path="/tmp/vrc_resp"
+    silent execute "!echo '' >" l:output_path
+    python3 rest.process_and_call(vim.eval('l:line_num'), vim.eval('l:all_text'), vim.eval('l:output_path'))
 
     " If buffer exists, remove it and then only create new
     bufdo if @% == "vrc_resp" | set ma | endif
     bufdo if @% == "vrc_resp" | bd! | endif
 
-    " TODO: bug when buffer is deleted and again client run
-    vne vrc_resp | execute "0read " . vrc_result_path
+
+    vne | execute "0read " . l:output_path
+    execute "file vrc_resp"
+    setlocal buftype=nofile
     set wrap
     normal !gg
     set noma

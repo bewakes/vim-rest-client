@@ -1,6 +1,11 @@
 import requests
 import json
+import re
 import vim
+
+METHODS = [
+    'GET', 'PUT', 'POST', 'DELETE', 'PATCH', 'OPTIONS',
+]
 
 STATUSES = {
     200: 'OK',
@@ -34,26 +39,33 @@ def get_lines_for(tag, lines):
     return relevant_lines, nextstart
 
 
-def get_headers(headerlines):
+def parse_headers(headerstr):
     headers = {}
-    for x in headerlines:
+    for x in headerstr.split('\n'):
         k, v = x.split(':')
         headers[k.strip()] = v.strip()
     return headers
+
+
+def parse_body(bodystr, headers):
+    contenttype = headers.get('Content-Type')
+    if contenttype == 'application/json':
+        return json.loads(bodystr)
+    else:
+        return '&'.join([x.strip() for x in bodystr.split('\n')])
 
 
 def to_vim_str(name, val):
     vim.command(r'let {} = "{}"'.format(name, val))
 
 
-def save_result(result):
-    filepath = '/tmp/vim_rest_client_result'
+def save_result(result, path):
     error = result['error']
-    with open(filepath, 'w') as f:
+    with open(path, 'w') as f:
         if error:
             f.write("ERROR\n=====\n\n")
             f.write(result['message'])
-            return filepath
+            return
         f.write("RESPONSE\n========\n\n")
         f.write("{} {}\nStatus {} {}\n\n".format(
             result['method'], result['url'], result['status_code'],
@@ -65,56 +77,61 @@ def save_result(result):
         ))
         f.write("\n\nBODY\n====\n")
         f.write(result['body'])
-        f.close()
-        return filepath
+        f.write("\n")
 
 
-def process_and_call(line, text):
+def process_and_call(line, text, path):
     linenum = int(line)
     lines = [x for x in text.split('\n')]
 
-    firstline = 0
-    endline = 0
-
     try:
-        for i, line in enumerate(lines):
-            if line.strip().replace(' ', '').startswith('<request>'):
-                if i <= linenum - 1:
-                    firstline = i
-            elif line.strip().replace(' ', '').startswith('</request>'):
-                if i > linenum - 1:
-                    endline = i
-                    break
-        if firstline >= endline:
-            raise Exception('Request must be enclosed in <request> </request> tag')  # noqa
+        # FIRST FIND first line
+        firstline = None
+        for i in range(linenum-1, -1, -1):
+            line = lines[i].strip()
+            if line and line.split()[0] in METHODS:
+                firstline = i
+                break
+            if firstline is None:
+                print('FIRST LINE IS NONE')
+                raise Exception("Invalid request block")
 
-        relevant_lines = lines[firstline+1:endline]  # need not include borders
-        # Strip off empty lines
-        relevant_lines = [x for x in relevant_lines if x.strip() != '']
+        # NOW FIND LAST line
+        lastline = None
+        for i in range(linenum, len(lines)):
+            line = lines[i].strip()
+            lastline = i-1
+            if line and line.split()[0] in METHODS:
+                break
 
-        # get header lines
-        headerlines, methodstart = get_lines_for('header', relevant_lines)
+        relevant_lines = lines[firstline:lastline+1]
 
-        # get method lines
-        methodlines, bodystart = get_lines_for(
-            'method',
-            relevant_lines[methodstart:]
-        )
+        request_block = '\n'.join(relevant_lines)
 
-        # get body lines
-        bodylines, _ = get_lines_for(
-            'body',
-            relevant_lines[methodstart+bodystart:]
-        )
-        # TODO: check for optional body
-        body = {}
-        for line in bodylines:
-            stripped = line.strip()
-            k, v = stripped.split('=')
-            body[k] = v
+        # Now regex match to find different blocks
+        # First match body and non body parts
+        match = re.match('(.*)\n\n\n(.*)', request_block)
+        if not match:
+            # Means no body present
+            method_and_header = request_block
+            bodystr = ''
+        else:
+            method_and_header = match.group(1)
+            bodystr = match.group(2)
+        # Now match method and header
+        match = re.match('(.*)\n\n(.*)', method_and_header)
+        if not match:
+            # NO header
+            headerstr = ''
+            method_uri = method_and_header
+        else:
+            headerstr = match.group(2)
+            method_uri = match.group(1)
 
-        headers = get_headers(headerlines)
-        method, url = methodlines[0].strip().split()
+        method, url = method_uri.strip().split()
+        headers = parse_headers(headerstr)
+
+        body = parse_body(bodystr, headers)
 
         requests_kwargs = {}
         if method.lower() == 'get':
@@ -137,9 +154,11 @@ def process_and_call(line, text):
             'message': 'Connection Error occured.\nPerhaps the site does not exist or you do not have internet connection.'  # noqa
         }
     except Exception as e:
+        import traceback
+        print(traceback.format_exc())
         output = {
             'error': 1,
-            'message': str(type(e))
+            'message': str(e.args[0])
         }
     else:
         respheaders = resp.headers
@@ -158,5 +177,5 @@ def process_and_call(line, text):
             'headers': resp.headers,
             'body': result
             }
-    path = save_result(output)
-    to_vim_str('vrc_result_path', path)
+    # write result to file
+    save_result(output, path)
