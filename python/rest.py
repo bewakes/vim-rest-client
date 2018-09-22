@@ -1,7 +1,6 @@
 import requests
 import json
 import re
-import vim
 
 METHODS = [
     'GET', 'PUT', 'POST', 'DELETE', 'PATCH', 'OPTIONS',
@@ -17,26 +16,6 @@ STATUSES = {
     401: 'UNAUTHENTICATED',
     502: 'GATWAY TIMEOUT',
 }
-
-
-def get_lines_for(tag, lines):
-    tag = tag.lower()
-
-    if not lines[0].replace(' ', '').lower() == '<{}>'.format(tag):
-        raise Exception('Expected tag <{}>'.format(tag))
-
-    nextstart = 0
-    relevant_lines = []
-
-    for i, line in enumerate(lines[1:]):
-        if line.strip().replace(' ', '').lower() == '</{}>'.format(tag):
-            nextstart = i + 2  # +2 because we start from index 1 (lines[1:])
-            break
-        relevant_lines.append(line)
-    else:
-        raise Exception('No end tag for <{}>'.format(tag))
-
-    return relevant_lines, nextstart
 
 
 def parse_headers(headerstr):
@@ -56,10 +35,6 @@ def parse_body(bodystr, headers):
         return json.loads(bodystr)
     else:
         return '&'.join([x.strip() for x in bodystr.split('\n')])
-
-
-def to_vim_str(name, val):
-    vim.command(r'let {} = "{}"'.format(name, val))
 
 
 def save_result(result, path):
