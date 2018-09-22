@@ -41,6 +41,9 @@ def get_lines_for(tag, lines):
 
 def parse_headers(headerstr):
     headers = {}
+    headerstr = headerstr.strip()
+    if not headerstr:
+        return headers
     for x in headerstr.split('\n'):
         k, v = x.split(':')
         headers[k.strip()] = v.strip()
@@ -92,14 +95,13 @@ def process_and_call(line, text, path):
             if line and line.split()[0] in METHODS:
                 firstline = i
                 break
-            if firstline is None:
-                print('FIRST LINE IS NONE')
-                raise Exception("Invalid request block")
+        if firstline is None:
+            raise Exception("Invalid request block")
 
         # NOW FIND LAST line
-        lastline = None
+        lastline = linenum-1
         for i in range(linenum, len(lines)):
-            line = lines[i].strip()
+            line = lines[i-1].strip()
             lastline = i-1
             if line and line.split()[0] in METHODS:
                 break
