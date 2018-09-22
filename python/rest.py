@@ -76,10 +76,10 @@ def process_and_call(line, text, path):
         # NOW FIND LAST line
         lastline = linenum-1
         for i in range(linenum, len(lines)):
-            line = lines[i-1].strip()
-            lastline = i-1
+            line = lines[i].strip()
             if line and line.split()[0] in METHODS:
                 break
+            lastline = i
 
         relevant_lines = lines[firstline:lastline+1]
 
@@ -87,23 +87,24 @@ def process_and_call(line, text, path):
 
         # Now regex match to find different blocks
         # First match body and non body parts
-        match = re.match('(.*)\n\n\n(.*)', request_block)
-        if not match:
+        splitted = request_block.split('\n\n\n')
+        if not len(splitted) > 1:
             # Means no body present
             method_and_header = request_block
             bodystr = ''
         else:
-            method_and_header = match.group(1)
-            bodystr = match.group(2)
+            method_and_header = splitted[0]
+            bodystr = '\n'.join(splitted[1:])
+
         # Now match method and header
-        match = re.match('(.*)\n\n(.*)', method_and_header)
-        if not match:
+        splitted = method_and_header.split('\n\n')
+        if not len(splitted) > 1:
             # NO header
             headerstr = ''
             method_uri = method_and_header
         else:
-            headerstr = match.group(2)
-            method_uri = match.group(1)
+            method_uri = splitted[0]
+            headerstr = '\n'.join(splitted[1:])
 
         method, url = method_uri.strip().split()
         headers = parse_headers(headerstr)
@@ -114,7 +115,7 @@ def process_and_call(line, text, path):
         if method.lower() == 'get':
             requests_kwargs['params'] = body
         else:
-            requests_kwargs['data'] = body
+            requests_kwargs['json'] = body
 
         # now we are ready for sending request
         request_method = getattr(requests, method.lower())
