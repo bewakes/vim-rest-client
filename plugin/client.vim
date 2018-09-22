@@ -31,6 +31,7 @@ function! RunClient()
     vne | execute "0read " . l:output_path
     execute "file vrc_resp"
     setlocal buftype=nofile
+    set ft=vrc
     set wrap
     normal !gg
     set noma
