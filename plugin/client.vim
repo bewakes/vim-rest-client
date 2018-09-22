@@ -37,20 +37,8 @@ function! RunClient()
     set noma
 endfunction
 
-let g:vrc_template_list = ["", "<request>", "    <header>", "    </header>", "", "    <method>", "    </method>", "", "    <body>", "    </body>", "</request>"]
-
-function! VrcTemplate()
-    for l in g:vrc_template_list
-        execute append(line('$'), "")
-        execute setline(line('$'), l)
-        execute 'normal G'
-    endfor
-endfunction
-
 
 " Setting file type
 au BufNewFile,BufRead *.vrc set filetype=vrc
-
-command! -nargs=0 VrcTemplate call VrcTemplate()
 
 command! -nargs=0 RunVrc call RunClient()
