@@ -43,6 +43,14 @@ Accept: application/json
 }
 ```
 
-To get response, run command in normal mode `RunVrc`, and the result comes in a vertical splitted buffer. 
+To get response, run command `:RunVrc`, and the result appears in a vertical splitted buffer. 
 
 **NOTE**: Multiple requests can be present in a single file. The request block where the cursor lies will be executed.
+
+## Syntax Highlighting
+For syntax highlighting, either save the request file with `.vrc` extension or run command `:set ft=vrc`
+
+## TODO
+- Make this async
+- Add more features
+- Make configurable
