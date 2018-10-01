@@ -11,6 +11,7 @@ STATUSES = {
     201: 'CREATED',
     400: 'BAD REQUEST',
     404: 'NOT FOUND',
+    405: 'METHOD NOT ALLOWED',
     500: 'SERVER ERROR',
     403: 'FORBIDDEN',
     401: 'UNAUTHENTICATED',
@@ -24,8 +25,8 @@ def parse_headers(headerstr):
     if not headerstr:
         return headers
     for x in headerstr.split('\n'):
-        k, v = x.split(':')
-        headers[k.strip()] = v.strip()
+        splitted = x.split(':')
+        headers[splitted[0].strip()] = ''.join(splitted[1:]).strip()
     return headers
 
 
