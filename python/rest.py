@@ -26,7 +26,7 @@ def parse_headers(headerstr):
         return headers
     for x in headerstr.split('\n'):
         splitted = x.split(':')
-        headers[splitted[0].strip()] = ''.join(splitted[1:]).strip()
+        headers[splitted[0].strip()] = ':'.join(splitted[1:]).strip()
     return headers
 
 
