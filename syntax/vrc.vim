@@ -8,6 +8,7 @@ syntax keyword httpHeaderKey Accept Authorization Content Type Connection Length
 syntax match uri /http.*/
 syntax match value "\v\".*\""
 syntax match key "\v\".*\":"
+syntax match comment "\v^ *#.*"
 
 highlight link httpMethod Keyword
 highlight link httpHeaderKey Exception
