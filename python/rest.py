@@ -39,13 +39,19 @@ def parse_body(bodystr, headers, method):
     elif contenttype == 'application/json':
         return json.loads(bodystr)
     else:
-        splitted = bodystr.split('\n')
+        splitted = bodystr.strip().split('\n')
         new = []
-        flag = False
+        flag = True
+        start_comment = False
         for line in splitted[::-1]:
-            if not flag and line.strip() and not line[0] != '#':
-                flag = True
+            if flag and not start_comment and line.strip() and line[0] == '#':
+                start_comment = True
+                flag = False
+            if start_comment and line[0] == '#':
                 pass
+            elif start_comment and line[0] != '#':
+                start_comment = False
+                new.append(line)
             else:
                 new.append(line)
         return '\n'.join(new[::-1])
