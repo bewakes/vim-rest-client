@@ -18,6 +18,8 @@ STATUSES = {
     502: 'GATWAY TIMEOUT',
 }
 
+END_COMMENTS_REGEX = re.compile(r'(#.*\n)+(#.*\n{0,1})')
+
 
 def parse_headers(headerstr):
     headers = {}
@@ -30,12 +32,23 @@ def parse_headers(headerstr):
     return headers
 
 
-def parse_body(bodystr, headers):
+def parse_body(bodystr, headers, method):
     contenttype = headers.get('Content-Type')
-    if contenttype == 'application/json':
+    if method.upper() == 'GET':
+        return '&'.join([x.strip() for x in bodystr.split('\n')])
+    elif contenttype == 'application/json':
         return json.loads(bodystr)
     else:
-        return '&'.join([x.strip() for x in bodystr.split('\n')])
+        splitted = bodystr.split('\n')
+        new = []
+        flag = False
+        for line in splitted[::-1]:
+            if not flag and line.strip() and not line[0] != '#':
+                flag = True
+                pass
+            else:
+                new.append(line)
+        return '\n'.join(new[::-1])
 
 
 def save_result(result, path):
@@ -110,13 +123,17 @@ def process_and_call(line, text, path):
         method, url = method_uri.strip().split()
         headers = parse_headers(headerstr)
 
-        body = parse_body(bodystr, headers)
+        body = parse_body(bodystr, headers, method)
 
         requests_kwargs = {}
+        req_content_type = headers.get('Content-Type', 'application/json')
+
         if method.lower() == 'get':
             requests_kwargs['params'] = body
-        else:
+        elif req_content_type == 'application/json':
             requests_kwargs['json'] = body
+        else:
+            requests_kwargs['data'] = body
 
         # now we are ready for sending request
         request_method = getattr(requests, method.lower())
