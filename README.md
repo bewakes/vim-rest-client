@@ -47,6 +47,16 @@ To get response, run command `:RunVrc`, and the result appears in a vertical spl
 
 **NOTE**: Multiple requests can be present in a single file. The request block where the cursor lies will be executed.
 
+## Authorization
+Currently only **Basic authorization is supported**. To have basic authorization, in the `Authorization` header field, provide value as `$BASIC(username, password)`. For example:
+```yaml
+PUT http://testing-vrc.com
+
+Authorization: $BASIC(user, password)
+Content-Type: application/json
+Accept: application/json
+```
+
 ## Syntax Highlighting
 For syntax highlighting, either save the request file with `.vrc` extension or run command `:set ft=vrc`
 

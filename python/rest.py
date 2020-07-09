@@ -1,6 +1,7 @@
 import requests
 import json
 import re
+import base64
 
 METHODS = [
     'GET', 'PUT', 'POST', 'DELETE', 'PATCH', 'OPTIONS',
@@ -21,6 +22,18 @@ STATUSES = {
 END_COMMENTS_REGEX = re.compile(r'(#.*\n)+(#.*\n{0,1})')
 
 
+def parse_header_value(key: str, value: str) -> str:
+    # Basic auth should be given as: $BASIC(username, password)
+    if key == 'Authorization' and value.startswith('$BASIC'):
+        match = re.match(r'\( *(.*?), *(.*) *\)$', value.replace('$BASIC', ''))
+        if not match:
+            return value
+        username_password = f'{match.group(1)}:{match.group(2)}'
+        encoded = base64.b64encode(username_password.encode())  # accepts bytes not str
+        return f'Basic {encoded.decode()}'
+    return value
+
+
 def parse_headers(headerstr):
     headers = {}
     headerstr = headerstr.strip()
@@ -28,7 +41,11 @@ def parse_headers(headerstr):
         return headers
     for x in headerstr.split('\n'):
         splitted = x.split(':')
-        headers[splitted[0].strip()] = ':'.join(splitted[1:]).strip()
+        header_key = splitted[0].strip()
+        raw_value = ':'.join(splitted[1:]).strip()
+        header_value: str = parse_header_value(header_key, raw_value)
+        # 'Since splitted by :, join by : as well
+        headers[header_key] = header_value
     return headers
 
 
@@ -145,12 +162,12 @@ def process_and_call(line, text, path):
         request_method = getattr(requests, method.lower())
 
         resp = request_method(url, headers=headers, **requests_kwargs)
-    except requests.exceptions.SSLError as e:
+    except requests.exceptions.SSLError:
         output = {
             'error': 1,
             'message': 'SSL error occured. Maybe the certificate of the website expired or you don\'t have updated certificates'  # noqa
         }
-    except requests.exceptions.ConnectionError as e:
+    except requests.exceptions.ConnectionError:
         output = {
             'error': 1,
             'message': 'Connection Error occured.\nPerhaps the site does not exist or you do not have internet connection.'  # noqa
