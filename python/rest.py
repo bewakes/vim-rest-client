@@ -4,7 +4,7 @@ import re
 import base64
 
 METHODS = [
-    'GET', 'PUT', 'POST', 'DELETE', 'PATCH', 'OPTIONS',
+    'GET', 'PUT', 'POST', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD',
 ]
 
 STATUSES = {
