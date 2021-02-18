@@ -71,7 +71,11 @@ def parse_body(bodystr, headers, method):
                 new.append(line)
             else:
                 new.append(line)
-        return '\n'.join(new[::-1])
+        d = {}
+        for x in new:
+            sp = x.split('=')
+            d[sp[0]] = ''.join(sp[1:])
+        return d
 
 
 def save_result(result, path):
