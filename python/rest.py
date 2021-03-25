@@ -187,7 +187,7 @@ def process_and_call(line, text, path):
         respheaders = resp.headers
         contenttype = respheaders.get('Content-Type', 'text/html')
 
-        result = resp.text
+        result = resp.content.decode('utf-8')
 
         if 'application/json' in contenttype:
             result = json.dumps(resp.json(), indent=4)
