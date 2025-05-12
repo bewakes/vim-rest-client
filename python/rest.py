@@ -92,7 +92,7 @@ def save_result(result, path):
         ))
         f.write("\n\nBODY\n====\n")
         f.write(result['body'])
-        f.write("\n")
+        f.write("\n\n")
 
         f.write("HEADERS\n=======\n")
         f.write('\n'.join(
