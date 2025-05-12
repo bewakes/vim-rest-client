@@ -90,13 +90,15 @@ def save_result(result, path):
             result['method'], result['url'], result['status_code'],
             STATUSES.get(result['status_code'], '')
         ))
+        f.write("\n\nBODY\n====\n")
+        f.write(result['body'])
+        f.write("\n")
+
         f.write("HEADERS\n=======\n")
         f.write('\n'.join(
             ["{}: {}".format(k, v) for k, v in result['headers'].items()]
         ))
-        f.write("\n\nBODY\n====\n")
-        f.write(result['body'])
-        f.write("\n")
+
 
 
 def process_and_call(line, text, path):
